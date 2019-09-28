@@ -25,35 +25,17 @@ class App extends React.Component {
 		this.onStoryChange = this.onStoryChange.bind(this);
 
 		fetch('95.213.38.15:8000', {
-			method: 'post',
+			method: 'POST',
 			headers: {
-				"Content-type": "application/json"
+				"Content-Type": "application/json;odata=verbose",
 			},
 			body: JSON.stringify({
 				"__metadata": { "type": "SP.Data.List4.ListItem" },
 			})
 		})
-		.then(
-			function(response) {
-				if (response.status !== 200) {
-					alert('Looks like there was a problem. Status Code: ' +
-					response.status);
-					return;
-				}
+		
 
-				// Examine the text in the response
-				response.json().then(function(data) {
-					alert(data);
-				});
-			}
-		)
-		.catch(function(err) {
-			alert('Fetch Error :-S', err);
-		});
-
-
-
-	}
+}
 
   onStoryChange (e) {
     this.setState({ activeStory: e.currentTarget.dataset.story })
