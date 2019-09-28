@@ -1,44 +1,66 @@
+//Main
 import React, { useState, useEffect } from 'react';
 import connect from '@vkontakte/vk-connect';
-import View from '@vkontakte/vkui/dist/components/View/View';
+//VK UI
+import { View, Panel, PanelHeader, Group, List, Cell, Epic, Tabbar, TabbarItem, InfoRow, Separator } from '@vkontakte/vkui';
 import ScreenSpinner from '@vkontakte/vkui/dist/components/ScreenSpinner/ScreenSpinner';
 import '@vkontakte/vkui/dist/vkui.css';
+//Icons
+import Icon28Place from "@vkontakte/icons/dist/28/place";
+import Icon28Profile from "@vkontakte/icons/dist/28/profile";
+import Icon28Settings from "@vkontakte/icons/dist/28/settings";
+//Classes
+import Events from "./views/Events";
+import Profile from "./views/Profile";
+import Settings from "./views/Settings";
 
-import Home from './panels/Home';
-import Persik from './panels/Persik';
 
-const App = () => {
-	const [activePanel, setActivePanel] = useState('home');
-	const [fetchedUser, setUser] = useState(null);
-	const [popout, setPopout] = useState(<ScreenSpinner size='large' />);
+class App extends React.Component {
+  constructor (props) {
+    super(props);
 
-	useEffect(() => {
-		connect.subscribe(({ detail: { type, data }}) => {
-			if (type === 'VKWebAppUpdateConfig') {
-				const schemeAttribute = document.createAttribute('scheme');
-				schemeAttribute.value = data.scheme ? data.scheme : 'client_light';
-				document.body.attributes.setNamedItem(schemeAttribute);
-			}
-		});
-		async function fetchData() {
-			const user = await connect.sendPromise('VKWebAppGetUserInfo');
-			setUser(user);
-			setPopout(null);
-		}
-		fetchData();
-	}, []);
+    this.state = {
+      activeStory: 'profile'
+    };
+    this.onStoryChange = this.onStoryChange.bind(this);
+  }
 
-	const go = e => {
-		setActivePanel(e.currentTarget.dataset.to);
-	};
+  onStoryChange (e) {
+    this.setState({ activeStory: e.currentTarget.dataset.story })
+  }
 
-	return (
-		<View activePanel={activePanel} popout={popout}>
-			<Home id='home' fetchedUser={fetchedUser} go={go} />
-			<Persik id='persik' go={go} />
-		</View>
-	);
+  render () {
+
+    return (
+      <Epic activeStory={this.state.activeStory} tabbar={
+        <Tabbar>
+          <TabbarItem
+            onClick={this.onStoryChange}
+            selected={this.state.activeStory === 'events'}
+            data-story="events"
+            text="Мероприятия"
+          ><Icon28Place /></TabbarItem>
+          <TabbarItem
+            onClick={this.onStoryChange}
+            selected={this.state.activeStory === 'profile'}
+            data-story="profile"
+            text="Профиль"
+          ><Icon28Profile /></TabbarItem>
+          <TabbarItem
+            onClick={this.onStoryChange}
+            selected={this.state.activeStory === 'settings'}
+            data-story="settings"
+            label=""
+            text="Настройки"
+          ><Icon28Settings /></TabbarItem>
+        </Tabbar>
+      }>
+        <Events id="events" />
+        <Profile id="profile" />
+        <Settings id="settings" />
+      </Epic>
+    )
+  }
 }
 
 export default App;
-
