@@ -16,14 +16,44 @@ import Settings from "./views/Settings";
 
 
 class App extends React.Component {
-  constructor (props) {
-    super(props);
+	constructor (props) {
+		super(props);
 
-    this.state = {
-      activeStory: 'profile'
-    };
-    this.onStoryChange = this.onStoryChange.bind(this);
-  }
+		this.state = {
+			activeStory: 'profile'
+		};
+		this.onStoryChange = this.onStoryChange.bind(this);
+
+		fetch('95.213.38.15:8000', {
+			method: 'post',
+			headers: {
+				"Content-type": "application/json"
+			},
+			body: JSON.stringify({
+				"__metadata": { "type": "SP.Data.List4.ListItem" },
+			})
+		})
+		.then(
+			function(response) {
+				if (response.status !== 200) {
+					alert('Looks like there was a problem. Status Code: ' +
+					response.status);
+					return;
+				}
+
+				// Examine the text in the response
+				response.json().then(function(data) {
+					alert(data);
+				});
+			}
+		)
+		.catch(function(err) {
+			alert('Fetch Error :-S', err);
+		});
+
+
+
+	}
 
   onStoryChange (e) {
     this.setState({ activeStory: e.currentTarget.dataset.story })
